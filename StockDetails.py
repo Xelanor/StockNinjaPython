@@ -34,9 +34,11 @@ class StockDetails:
         """
         QUERY_URL = "https://query1.finance.yahoo.com/v7/finance/quote?symbols={}"
         res = requests.get(QUERY_URL.format(self.stockName))
-        data = res.json()["quoteResponse"]["result"][0]
+        data = res.json()["quoteResponse"]["result"]
 
-        self.daily_data = data
+        self.daily_data = data[0]
+
+        return data
 
     def get_stock_historic_data(self):
         """
@@ -244,5 +246,5 @@ class StockDetails:
         from pprint import pprint
         pprint(self.stock_details)
 
-details = StockDetails("XU100.IS", 90)
-details.start()
+# details = StockDetails("XU100.IS", 90)
+# details.start()
