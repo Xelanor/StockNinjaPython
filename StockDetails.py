@@ -62,9 +62,11 @@ class StockDetails:
         res = requests.get(QUERY_URL.format(
             self.stockName, (self.data_scope) + 30 ))  # Control 8 is true?
         data = res.json()["chart"]["result"][0]['indicators']["quote"][0]['close']
-        print(len(data))
         data = data[::8]
-        print(len(data))
+        
+        for i in range(len(data)):
+            if data[i] == None:
+                data[i] = data[i-1]
 
         self.historic_data = data
 
