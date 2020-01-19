@@ -2,6 +2,7 @@ import requests
 from datetime import datetime, timedelta
 import json
 from statistics import mean
+from xml.etree import ElementTree
 
 
 class StockDetails:
@@ -52,6 +53,8 @@ class StockDetails:
 
         self.historic_data = data
 
+        return data
+
     def get_non_stock_historic_data(self):
         """
         Get non-stocks historic data. Ex: GOLD
@@ -69,6 +72,27 @@ class StockDetails:
                 data[i] = data[i-1]
 
         self.historic_data = data
+
+    def get_stock_news(self):
+        """
+        Get stocks news from api
+        @return list
+        """
+        all_news = []
+        QUERY_URL = "https://feeds.finance.yahoo.com/rss/2.0/headline?s={}&region=US&lang=en-US"
+        res = requests.get(QUERY_URL.format(self.stockName))
+        tree = ElementTree.fromstring(res.content)
+
+        for child in tree.iter('item'):
+            news = {"title": "", "description": "", "date": ""}
+            news["title"] = child[4].text
+            news["description"] = child[0].text
+            news["date"] = child[3].text
+            
+            all_news.append(news)
+            
+        self.all_news = all_news
+        return all_news
 
     def combine_data_target(self):
         daily_data = self.daily_data
@@ -103,7 +127,8 @@ class StockDetails:
                             "ninja_index": self.ninja_values,
                             "ninja_index_s": self.ninja_values_s,
                             "triple_index": self.triple_index_values,
-                            "closes": self.historic_data[-self.data_scope:]
+                            "closes": self.historic_data[-self.data_scope:],
+                            "news": self.all_news
                         }
 
         self.stock_details = stock_details
