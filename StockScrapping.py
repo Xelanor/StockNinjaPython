@@ -29,9 +29,14 @@ class PriceProfit:
                     'text-right')[1].text.replace(',', '.'))
             except ValueError:
                 price_profit = float(0)
+            try:
+                pd_dd = float(row.find_elements_by_class_name(
+                    'text-right')[4].text.replace(',', '.'))
+            except ValueError:
+                pd_dd = float(0)
 
             requests.post("http://34.67.211.44/api/ticker/add-fk",
-                          {"name": f'{stock}.IS', "fk": price_profit})
+                          {"name": f'{stock}.IS', "fk": price_profit, "pd_dd": pd_dd})
 
             print(stock)
 
