@@ -48,19 +48,19 @@ def investment_tracker():
             break
 
         if investment_type == "buy":
-            if current_price > investment_price * 1.02:
-                message = "{}\n{}\nALIŞ\nAlış fiyatı: {}\nŞuanki fiyat: {}\n%2 üzerine çıktı.".format(
+            if current_price > investment_price * 1.015:
+                message = "{}\n{}\nALIŞ\nAlış fiyatı: {}\nŞuanki fiyat: {}\n%1.5 üzerine çıktı.".format(
                     date, stock_name, investment_price, current_price)
                 utils.telegram_bot_sendtext(message)
                 invetment_inform(transaction_id)
-            if current_price < investment_price * 0.98:
-                message = "{}\n{}\nALIŞ\nAlış fiyatı: {}\nŞuanki fiyat: {}\n%2 altına indi.".format(
+            if current_price < investment_price * 0.985:
+                message = "{}\n{}\nALIŞ\nAlış fiyatı: {}\nŞuanki fiyat: {}\n%1.5 altına indi.".format(
                     date, stock_name, investment_price, current_price)
                 utils.telegram_bot_sendtext(message)
                 invetment_inform(transaction_id)
         if investment_type == "sell":
-            if current_price < investment_price * 0.98:
-                message = "{}\n{}\nSATIŞ\nSatış fiyatı: {}\nŞuanki fiyat: {}\n%2 altına indi.".format(
+            if current_price < investment_price * 0.985:
+                message = "{}\n{}\nSATIŞ\nSatış fiyatı: {}\nŞuanki fiyat: {}\n%1.5 altına indi.".format(
                     date, stock_name, investment_price, current_price)
                 utils.telegram_bot_sendtext(message)
                 invetment_inform(transaction_id)
@@ -78,3 +78,8 @@ def result(event, context):
         },
         'body': json.dumps("done")
     }
+
+
+if __name__ == '__main__':
+    output = result("", "")
+    print(output["body"])
