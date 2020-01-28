@@ -37,6 +37,21 @@ def get_single_stock_target(stockName):
     return data
 
 
+def get_single_stock_special_data(stockName):
+    """
+    Get stock details from database
+    @return dict
+    """
+    QUERY_URL = "http://34.67.211.44/api/ticker/single-ticker"
+    res = requests.post(QUERY_URL, {'name': stockName})
+    data = res.json()
+
+    if data == None:
+        return {}
+
+    return data
+
+
 def get_current_tickers_data(stockName):
     """
     Get stocks daily data

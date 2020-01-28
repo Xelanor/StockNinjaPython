@@ -15,6 +15,8 @@ class StockDetails:
     def combine_data_target(self):
         daily_data = self.daily_data
         stock_target = self.stock_target
+        special_data = self.special_data
+
         stock_details = {
                             "name": self.stockName,
                             "date": utils.epoch_to_date(daily_data["regularMarketTime"]),
@@ -46,7 +48,9 @@ class StockDetails:
                             "ninja_index_s": self.ninja_values_s,
                             "triple_index": self.triple_index_values,
                             "closes": self.historic_data[-self.data_scope:],
-                            "news": self.all_news
+                            "news": self.all_news,
+                            "fk": special_data["fk"],
+                            "pd_dd": special_data["pd_dd"],
                         }
 
         return stock_details
@@ -62,6 +66,7 @@ class StockDetails:
 
         self.stock_target = utils.get_single_stock_target(stockName)
         self.daily_data = utils.get_current_tickers_data(stockName)
+        self.special_data = utils.get_single_stock_special_data(stockName)
 
         if self.stockName in self.non_stocks:
             self.historic_data = utils.get_non_stock_historic_data(stockName, data_scope)
@@ -96,3 +101,7 @@ def result(event, context):
         },
         'body': json.dumps(stock_details)
     }
+
+if __name__ == '__main__':
+    output = result({"queryStringParameters": {"stock": "THYAO.IS"}}, "")
+    print(output["body"])
