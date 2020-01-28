@@ -7,6 +7,7 @@ def telegram_bot_sendtext(bot_message):
 
     bot_token = '965073923:AAFiaucweNmVcqIzZybls59IGZ4Nbc7Be1s'
     bot_chatID = "-356638403"
+    bot_chatID = "573696036"
     send_text = 'https://api.telegram.org/bot' + bot_token + \
         '/sendMessage?chat_id=' + bot_chatID + '&parse_mode=Markdown&text=' + bot_message
 
@@ -59,6 +60,10 @@ def get_stock_historic_data(stockName, data_scope):
     QUERY_URL = "https://query1.finance.yahoo.com/v7/finance/chart/{}?range={}d&interval=1d&indicators=quote&includeTimestamps=false"
     res = requests.get(QUERY_URL.format(stockName, data_scope + 30))
     data = res.json()["chart"]["result"][0]['indicators']["quote"][0]['close']
+
+    for i in range(len(data)):  # Handle null values
+        if data[i] == None:
+            data[i] = data[i-1]
 
     return data
 
