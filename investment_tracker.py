@@ -4,9 +4,17 @@ import json
 import utils
 
 
-def invetment_inform(id):
+inform_rates = {
+    0: 0.015,
+    1: 0.02,
+    2: 0.025,
+    3: 0.03,
+}
+
+
+def invetment_inform(id, informCount):
     requests.post(
-        "http://34.67.211.44/api/transaction/set-informed", {"id": id})
+        "http://34.67.211.44/api/transaction/set-inform-number", {"id": id, "informCount": informCount})
 
 
 def investment_tracker():
@@ -41,29 +49,31 @@ def investment_tracker():
         date = datetime.strptime(
             investment["createdAt"][:10], "%Y-%m-%d").strftime("%d.%m.%Y")
         transaction_id = investment["_id"]
-        informed = investment["informed"]
+        informCount = investment["informCount"]
         current_price = prices[stock_name]
 
-        if informed == True:
+        if informCount > 3:
             break
 
+        inform_rate = inform_rates[informCount]
+
         if investment_type == "buy":
-            if current_price > investment_price * 1.015:
-                message = "{}\n{}\nALIŞ\nAlış fiyatı: {}\nŞuanki fiyat: {}\n%1.5 üzerine çıktı.".format(
-                    date, stock_name, investment_price, current_price)
+            if current_price > investment_price * (1 + inform_rate):
+                message = "{}\n{}\nALIŞ\nAlış fiyatı: {}\nŞuanki fiyat: {}\n%{} üzerine çıktı.".format(
+                    date, stock_name, investment_price, current_price, inform_rate * 100)
                 utils.telegram_bot_sendtext(message)
-                invetment_inform(transaction_id)
-            if current_price < investment_price * 0.985:
-                message = "{}\n{}\nALIŞ\nAlış fiyatı: {}\nŞuanki fiyat: {}\n%1.5 altına indi.".format(
-                    date, stock_name, investment_price, current_price)
+                invetment_inform(transaction_id, informCount + 1)
+            if current_price < investment_price * (1 - inform_rate):
+                message = "{}\n{}\nALIŞ\nAlış fiyatı: {}\nŞuanki fiyat: {}\n%{} altına indi.".format(
+                    date, stock_name, investment_price, current_price, inform_rate * 100)
                 utils.telegram_bot_sendtext(message)
-                invetment_inform(transaction_id)
+                invetment_inform(transaction_id, informCount + 1)
         if investment_type == "sell":
-            if current_price < investment_price * 0.985:
-                message = "{}\n{}\nSATIŞ\nSatış fiyatı: {}\nŞuanki fiyat: {}\n%1.5 altına indi.".format(
-                    date, stock_name, investment_price, current_price)
+            if current_price < investment_price * (1 - inform_rate):
+                message = "{}\n{}\nSATIŞ\nSatış fiyatı: {}\nŞuanki fiyat: {}\n%{} altına indi.".format(
+                    date, stock_name, investment_price, current_price, inform_rate * 100)
                 utils.telegram_bot_sendtext(message)
-                invetment_inform(transaction_id)
+                invetment_inform(transaction_id, informCount + 1)
 
 
 def result(event, context):

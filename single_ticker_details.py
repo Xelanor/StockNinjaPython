@@ -103,5 +103,5 @@ def result(event, context):
     }
 
 if __name__ == '__main__':
-    output = result({"queryStringParameters": {"stock": "THYAO.IS"}}, "")
+    output = result({"queryStringParameters": {"stock": "ADANA.IS"}}, "")
     print(output["body"])
